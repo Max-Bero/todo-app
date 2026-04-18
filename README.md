@@ -37,3 +37,8 @@ To run this project, you need to have the following installed on your machine:
 1. Clone the repository:
    ```bash
    git clone [https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git](https://github.com/Max-Bero/TODO-APP-DSS-Project.git)
+
+2. Running the project:
+   ```bash
+   npm create vite@latest
+   npm run dev
