@@ -40,5 +40,4 @@ To run this project, you need to have the following installed on your machine:
 
 2. Running the project:
    ```bash
-   npm create vite@latest
    npm run dev
