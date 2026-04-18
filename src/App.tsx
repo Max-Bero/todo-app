@@ -306,8 +306,8 @@ const toggleTheme = () => {
           
           <div className="modal-buttons">
             <button className="confirm-btn" onClick={() => {
-              deleteTask(taskToDelete); // Your existing delete function
-              setTaskToDelete(null);    // Close the window
+              deleteTask(taskToDelete); 
+              setTaskToDelete(null);    
             }}>
               Delete
             </button>
