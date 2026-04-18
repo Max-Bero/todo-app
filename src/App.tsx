@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 
 
 function App (){
+  const fetchdatasize = 50;
+
   interface Task{
     userid: number;
     id: string;
@@ -19,8 +21,22 @@ function App (){
   const [visibleCount, setVisibleCount] = useState<number>(5);
   const [visibleCompletedCount, setVisibleCompletedCount] = useState<number>(5);
   const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
-  const fetchdatasize = 50;
-  
+  const [sortOrder, setSortOrder] = useState('default');
+  const [filterUserId, setFilterUserId] = useState<number>(0);
+
+  const displayedTodos = [...ogtodos]
+    .filter(task => {
+      if (task.isDone) return false;
+      if (filterUserId === 0) return true;
+      if (filterUserId === -1) return task.userid === 0;
+      return task.userid === filterUserId;
+    })
+    .sort((a, b) => {
+      if (sortOrder === 'asc') return a.text.localeCompare(b.text);
+      if (sortOrder === 'desc') return b.text.localeCompare(a.text);
+      return Number(b.id) - Number(a.id); // Default
+  });
+
   useEffect(() => {
     const getTasks = async () => {
       setIsLoading(true); 
@@ -43,14 +59,12 @@ function App (){
         setCompleted(completedTasks);
         setogTodos(uncompletedTasks);
 
-
       } catch (error) {
         console.error("Failed to fetch:", error);
       } finally {
         setIsLoading(false); 
       }
     };
-
     getTasks();
   }, []);
 
@@ -64,7 +78,7 @@ function App (){
     ? Math.max(...ogtodos.map(t => Number(t.id))) 
     : 0;
 
-  const nextId = String(maxId + 1);
+    const nextId = String(maxId + 1);
   
     const newTask: Task = {
       userid: 0, //0 for local user adding from the form
@@ -87,96 +101,73 @@ function App (){
   }
 
   const completeTask = (id:string)=>{
-    const taskToMove = todos.find(t => t.id === id);
+    const taskToMove = ogtodos.find(t => t.id === id);
+
     if (taskToMove) {
       const updatedTask = { 
-      ...taskToMove, 
-      date: Date.now(),
-      isDone: true
-      };  
+        ...taskToMove, 
+        date: Date.now(), 
+        isDone: true 
+      };
 
-      setTodos(todos.filter(t => t.id !== id));
-      setCompleted([updatedTask, ...completed ]);
-      setogTodos(ogtodos.map(t => t.id === id ? updatedTask : t));
+      setogTodos(prev => prev.map(t => t.id === id ? updatedTask : t));
+
+      setCompleted(prev => [updatedTask, ...prev]);
     }
-    else return;
   }
 
   const undoComplete = (index:number)=>{
     const taskToUndo = completed[index];
-    if (taskToUndo) {
-      const originalTask = ogtodos.find(t => t.id === taskToUndo.id);
-      const updatedTask = {
-        ...taskToUndo,
-        date: originalTask ? originalTask.date : taskToUndo.date
+      
+      if (taskToUndo) {
+        const updatedTask = {
+          ...taskToUndo,
+          isDone: false, 
+          date: Date.now() 
+        };
+
+        setogTodos(prev => [...prev, updatedTask]);
+
+        setCompleted(prev => prev.filter((_, i) => i !== index));
       }
-      const nextTodos = [updatedTask, ...todos];
-      nextTodos.sort((a, b) => Number(a.id) - Number(b.id));
-
-      const newCompleted = completed.filter((_, i) => i !== index);
-      setCompleted(newCompleted);
-      setTodos(nextTodos); 
-    } else return;
-  }
-
-  const sortTodos = (type:string) => {
-    let sorted = [...todos];
-
-    if (type === 'asc') {
-      sorted.sort((a, b) => a.text.localeCompare(b.text));
-    } 
-    else if (type === 'desc') {
-      sorted.sort((a, b) => b.text.localeCompare(a.text));
-    } 
-    else if (type === 'default') {
-      sorted.sort((a, b) => Number(a.id) - Number(b.id));
     }
 
-    setTodos(sorted);
+  const sortTodos = (type:string) => {
+    setSortOrder(type);
   }
 
-const filterByUser = (user: number) => {
- let filtered: Task[];
-
-  if (user === 0) {
-    filtered = ogtodos.filter(task => !task.isDone);
-  } else if (user === -1) {
-    filtered = ogtodos.filter((task) => task.userid === 0 && !task.isDone);
-  } else {
-    filtered = ogtodos.filter((task) => task.userid === user && !task.isDone);
+  const filterByUser = (user: number) => {  
+    setFilterUserId(user);
   }
 
-  setTodos(filtered);
+  const countUsers = () => {
+    const userIds = ogtodos.map(task => task.userid);
+    const uniqueUserIds = new Set(userIds);
+    const numberOfUsers = uniqueUserIds.size;
+    return numberOfUsers;
   }
 
-const countUsers = () => {
-  const userIds = ogtodos.map(task => task.userid);
-  const uniqueUserIds = new Set(userIds);
-  const numberOfUsers = uniqueUserIds.size;
-  return numberOfUsers;
-}
+  const sortByDate = (type: string) => {
+    let sorted = [...completed];
+    if (type === 'newest') {
+      sorted.sort((a, b) => b.date - a.date);
+    } 
+    else if (type === 'oldest') {
+      sorted.sort((a, b) => a.date - b.date);
+    }
 
-const sortByDate = (type: string) => {
-  let sorted = [...completed];
-  if (type === 'newest') {
-    sorted.sort((a, b) => b.date - a.date);
-  } 
-  else if (type === 'oldest') {
-    sorted.sort((a, b) => a.date - b.date);
+    setCompleted(sorted);
   }
 
-  setCompleted(sorted);
-}
+  const [theme, setTheme] = useState("light");
 
-const [theme, setTheme] = useState("light");
+  useEffect(() => {
+    document.body.setAttribute('data-theme', theme);
+  }, [theme]);
 
-useEffect(() => {
-  document.body.setAttribute('data-theme', theme);
-}, [theme]);
-
-const toggleTheme = () => {
-  setTheme(prev => (prev === "light" ? "dark" : "light"));
-};
+  const toggleTheme = () => {
+    setTheme(prev => (prev === "light" ? "dark" : "light"));
+  };
 
   return (
     <>
@@ -231,7 +222,7 @@ const toggleTheme = () => {
 
 
             <ul id='uncompleted-list'>
-              {todos.slice(0, visibleCount).map((task) => (
+              {displayedTodos.slice(0, visibleCount).map((task) => (
               <li key={task.id}>
                 <div>
                   <strong>{task.text}</strong>
@@ -245,7 +236,7 @@ const toggleTheme = () => {
             </ul> 
 
             <div className='show-more'>
-            {visibleCount < todos.length && (
+            {visibleCount < displayedTodos.length && (
               <button onClick={() => setVisibleCount(prev => prev + 5)}>
                 Show More
               </button>
