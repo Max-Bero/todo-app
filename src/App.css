@@ -39,14 +39,14 @@
   --text-main: #f1f5f9;
   --glass-bg: rgba(255, 255, 255, 0.05);
   --primary: #38bdf8;
-  --primary-hover: #0284c7; /* Darker blue for hover states in dark mode */
+  --primary-hover: #0284c7; 
   
   /* Surface & Border Variables */
   --surface-bg: #1e293b;
   --input-bg: #0f172a;
   --border-color: #334155;
   
-  /* Tinted Button Variables (Using opacity for dark mode adaptation) */
+  /* Tinted Button Variables */
   --btn-success-bg: rgba(34, 197, 94, 0.1);
   --btn-success-border: rgba(34, 197, 94, 0.2);
   --btn-primary-bg: rgba(56, 189, 248, 0.1);
@@ -166,7 +166,7 @@ ul {
 }
 
 li {
-  color: var(--text-main); /* This forces standard text to inherit */
+  color: var(--text-main);
   background: var(--surface-bg);
   margin-bottom: 12px;
   padding: 1rem;
@@ -302,7 +302,7 @@ select {
   z-index: 9999;
   animation: fadeIn 0.3s ease;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.4); /* Added slight dimming to background for better focus */
+  background: rgba(0, 0, 0, 0.4); 
 }
 
 .confirmation-card {
