@@ -428,3 +428,9 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+.no-todo{
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 50px;
+}

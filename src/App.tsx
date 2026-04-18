@@ -222,6 +222,7 @@ function App (){
 
 
             <ul id='uncompleted-list'>
+              {displayedTodos.length === 0 &&(<div className='no-todo'>No todos</div>)}
               {displayedTodos.slice(0, visibleCount).map((task) => (
               <li key={task.id}>
                 <div>
