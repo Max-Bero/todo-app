@@ -25,6 +25,7 @@ A modern, management application featuring a glass-like aesthetic, dark mode sup
 - **Task Management:** Add, edit, and delete tasks with instant UI feedback.
 - **Sorting function:** Sort by alphabetical order and by date completed.
 - **Filtering:** Filter tasks by user.
+- **Pagination:** Declutters the screen by limiting how many todos are displayed.
 - **Responsive Design:** Optimized for mobile and desktop screens.
 
 ## 🛠 Prerequisites
